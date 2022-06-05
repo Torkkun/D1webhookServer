@@ -3,6 +3,8 @@ package server
 import (
 	"app/pkg/domain"
 	"app/pkg/usecase"
+	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -25,13 +27,56 @@ func googleWebhookHandler(ctx *gin.Context) {
 	switch reqp.Handler.Name {
 	case "monitor":
 		log.Println("monitor")
+		// post
+		req := domain.MonitorRequest{}
+		req.Notification = true
+		jsonreq, err := json.Marshal(req)
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+				Prompt: usecase.MonitorFailedPrompt(),
+			})
+			return
+		}
+		res, err := http.Post(ProjectorURL, "application/json", bytes.NewBuffer(jsonreq))
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+				Prompt: usecase.MonitorFailedPrompt(),
+			})
+			return
+		}
+		defer res.Body.Close()
 		ctx.JSON(200, domain.ResponsePayloadGoogleAssistant{
-			Prompt: usecase.MonitorPrompt(),
+			Prompt: usecase.MonitorSuccessPrompt(),
 		})
 		return
 
 	case "projector":
 		log.Println("projector")
+		// post
+		req := domain.ProjectorRequest{}
+		req.Notification = true
+		jsonreq, err := json.Marshal(req)
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+				Prompt: usecase.ProjectorFailedPrompt(),
+			})
+			return
+		}
+		res, err := http.Post(ProjectorURL, "application/json", bytes.NewBuffer(jsonreq))
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+				Prompt: usecase.ProjectorFailedPrompt(),
+			})
+			return
+		}
+		defer res.Body.Close()
+		ctx.JSON(200, domain.ResponsePayloadGoogleAssistant{
+			Prompt: usecase.ProjectorSuccessPrompt(),
+		})
 	}
 }
 
@@ -44,7 +89,19 @@ func merakiWebhookHandler(ctx *gin.Context) {
 		return
 	}
 	// 色々すっ飛ばして起きた時間だけ送る
-	resp := domain.DoorOpenRequest{}
-	resp.Time = reqp.OccuredAt
-	res, err := http.Post(DoorURL, "application/json")
+	req := domain.DoorOpenRequest{}
+	req.Time = reqp.OccuredAt
+	jsonreq, err := json.Marshal(req)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, "Internal Server Error")
+		return
+	}
+	res, err := http.Post(DoorURL, "application/json", bytes.NewBuffer(jsonreq))
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, "Internal Server Error")
+		return
+	}
+	defer res.Body.Close()
 }
