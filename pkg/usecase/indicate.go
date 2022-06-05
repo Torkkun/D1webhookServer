@@ -2,9 +2,7 @@ package usecase
 
 import "app/pkg/domain"
 
-func MonitorSuccessPrompt() *domain.Prompt {
-
-	// retrun部分はそのうち分けて置き換えれるように
+func SuccessPrompt() *domain.Prompt {
 	return &domain.Prompt{
 		Override: false,
 		LastSimple: &domain.Simple{
@@ -14,7 +12,8 @@ func MonitorSuccessPrompt() *domain.Prompt {
 	}
 }
 
-func MonitorFailedPrompt() *domain.Prompt {
+// ちゃんと表示されるのか未検証
+func FailedPrompt() *domain.Prompt {
 	return &domain.Prompt{
 		Override: true,
 		LastSimple: &domain.Simple{

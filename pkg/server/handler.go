@@ -25,6 +25,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		return
 	}
 	switch reqp.Handler.Name {
+	// モニターハンドラーの処理
 	case "monitor":
 		log.Println("monitor")
 		// post
@@ -34,7 +35,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.MonitorFailedPrompt(),
+				Prompt: usecase.FailedPrompt(),
 			})
 			return
 		}
@@ -42,16 +43,16 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.MonitorFailedPrompt(),
+				Prompt: usecase.FailedPrompt(),
 			})
 			return
 		}
 		defer res.Body.Close()
 		ctx.JSON(200, domain.ResponsePayloadGoogleAssistant{
-			Prompt: usecase.MonitorSuccessPrompt(),
+			Prompt: usecase.SuccessPrompt(),
 		})
 		return
-
+	// プロジェクターハンドラーの場合
 	case "projector":
 		log.Println("projector")
 		// post
@@ -61,7 +62,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.ProjectorFailedPrompt(),
+				Prompt: usecase.FailedPrompt(),
 			})
 			return
 		}
@@ -69,13 +70,13 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.ProjectorFailedPrompt(),
+				Prompt: usecase.FailedPrompt(),
 			})
 			return
 		}
 		defer res.Body.Close()
 		ctx.JSON(200, domain.ResponsePayloadGoogleAssistant{
-			Prompt: usecase.ProjectorSuccessPrompt(),
+			Prompt: usecase.SuccessPrompt(),
 		})
 	}
 }
