@@ -35,7 +35,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.FailedPrompt(),
+				Prompt: usecase.FailedPrompt("受信失敗"),
 			})
 			return
 		}
@@ -43,7 +43,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.FailedPrompt(),
+				Prompt: usecase.FailedPrompt("post出来ませんでした"),
 			})
 			return
 		}
@@ -62,7 +62,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.FailedPrompt(),
+				Prompt: usecase.FailedPrompt("受信できませんでした"),
 			})
 			return
 		}
@@ -70,7 +70,7 @@ func googleWebhookHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.FailedPrompt(),
+				Prompt: usecase.FailedPrompt("送信できませんでした"),
 			})
 			return
 		}

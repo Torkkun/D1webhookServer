@@ -13,12 +13,12 @@ func SuccessPrompt() *domain.Prompt {
 }
 
 // ちゃんと表示されるのか未検証
-func FailedPrompt() *domain.Prompt {
+func FailedPrompt(text string) *domain.Prompt {
 	return &domain.Prompt{
 		Override: true,
 		LastSimple: &domain.Simple{
 			Speech: "接続に失敗しました。もう一度お試しください",
-			Text:   "Internal Server Error",
+			Text:   text,
 		},
 	}
 }
