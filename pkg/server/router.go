@@ -21,7 +21,7 @@ func NewRouter() *Router {
 }
 
 func (router *Router) Run() {
-	router.Engine.Run()
+	router.Engine.Run(":8081")
 }
 
 func (router *Router) initRoute() {
