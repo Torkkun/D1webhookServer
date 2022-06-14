@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	ProjectorURL = "localhost:8000/projector/"
+	ProjectorURL = "http://localhost:8000/projector/"
 	MonitorURL   = ""
-	SearchURL    = "localhost:8000/search/"
+	SearchURL    = "http://localhost:8000/search/"
 )
 
 func googleWebhookHandler(ctx *gin.Context) {
