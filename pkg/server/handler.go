@@ -76,15 +76,7 @@ func GetProjector(ctx *gin.Context) {
 		return
 	}
 	defer res.Body.Close()
-	var resmessage ResponseMessage
-	if err := json.NewDecoder(res.Body).Decode(&resmessage); err != nil {
-		log.Println(err)
-		ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-			Prompt: usecase.FailedPrompt("サーバーエラー"),
-		})
-		return
-	}
-	log.Println(resmessage.Message)
+	log.Println(res.Body)
 }
 
 // POST
@@ -135,13 +127,7 @@ func merakiWebhookHandler(ctx *gin.Context) {
 		return
 	}
 	defer res.Body.Close()
-	var resmessage ResponseMessage
-	if err := json.NewDecoder(res.Body).Decode(&resmessage); err != nil {
-		log.Println(err)
-		ctx.JSON(500, "Internal Server Error")
-		return
-	}
-	log.Println(resmessage.Message)
+	log.Println(res.Body)
 	ctx.JSON(200, "success")
 }
 
