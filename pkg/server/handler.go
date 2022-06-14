@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	ProjectorURL = ""
+	ProjectorURL = "localhost:8000/projector/"
 	MonitorURL   = ""
-	DoorURL      = ""
+	SearchURL    = "localhost:8000/search/"
 )
 
 func googleWebhookHandler(ctx *gin.Context) {
@@ -52,33 +52,66 @@ func googleWebhookHandler(ctx *gin.Context) {
 			Prompt: usecase.SuccessPrompt(),
 		})
 		return
+
 	// プロジェクターハンドラーの場合
 	case "projector":
 		log.Println("projector")
-		// post
-		req := domain.ProjectorRequest{}
-		req.Notification = true
-		jsonreq, err := json.Marshal(req)
-		if err != nil {
-			log.Println(err)
-			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.FailedPrompt("受信できませんでした"),
-			})
-			return
-		}
-		res, err := http.Post(ProjectorURL, "application/json", bytes.NewBuffer(jsonreq))
-		if err != nil {
-			log.Println(err)
-			ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
-				Prompt: usecase.FailedPrompt("送信できませんでした"),
-			})
-			return
-		}
-		defer res.Body.Close()
+		// get
+		GetProjector(ctx)
 		ctx.JSON(200, domain.ResponsePayloadGoogleAssistant{
 			Prompt: usecase.SuccessPrompt(),
 		})
+		return
 	}
+}
+
+// GET
+func GetProjector(ctx *gin.Context) {
+	res, err := http.Get(ProjectorURL)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+			Prompt: usecase.FailedPrompt("get出来ませんでした"),
+		})
+		return
+	}
+	defer res.Body.Close()
+	var resmessage ResponseMessage
+	if err := json.NewDecoder(res.Body).Decode(&resmessage); err != nil {
+		log.Println(err)
+		ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+			Prompt: usecase.FailedPrompt("サーバーエラー"),
+		})
+		return
+	}
+	log.Println(resmessage.Message)
+}
+
+// POST
+func PostProjector(ctx *gin.Context) {
+	req := domain.ProjectorRequest{}
+	req.Notification = true
+	jsonreq, err := json.Marshal(req)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+			Prompt: usecase.FailedPrompt("受信できませんでした"),
+		})
+		return
+	}
+	res, err := http.Post(ProjectorURL, "application/json", bytes.NewBuffer(jsonreq))
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, domain.ResponsePayloadGoogleAssistant{
+			Prompt: usecase.FailedPrompt("送信できませんでした"),
+		})
+		return
+	}
+	defer res.Body.Close()
+}
+
+type ResponseMessage struct {
+	Message string `json:"message"`
 }
 
 func merakiWebhookHandler(ctx *gin.Context) {
@@ -90,6 +123,30 @@ func merakiWebhookHandler(ctx *gin.Context) {
 		return
 	}
 	// 色々すっ飛ばして起きた時間だけ送る
+	// post
+	//Postsearch(ctx, &reqp)
+
+	// 一次的に
+	// get
+	res, err := http.Get(SearchURL)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, "Internal Server Error")
+		return
+	}
+	defer res.Body.Close()
+	var resmessage ResponseMessage
+	if err := json.NewDecoder(res.Body).Decode(&resmessage); err != nil {
+		log.Println(err)
+		ctx.JSON(500, "Internal Server Error")
+		return
+	}
+	log.Println(resmessage.Message)
+	ctx.JSON(200, "success")
+}
+
+// POST
+func Postsearch(ctx *gin.Context, reqp *domain.RequestPayloadMeraki) {
 	req := domain.DoorOpenRequest{}
 	req.Time = reqp.OccuredAt
 	jsonreq, err := json.Marshal(req)
@@ -98,7 +155,7 @@ func merakiWebhookHandler(ctx *gin.Context) {
 		ctx.JSON(500, "Internal Server Error")
 		return
 	}
-	res, err := http.Post(DoorURL, "application/json", bytes.NewBuffer(jsonreq))
+	res, err := http.Post(SearchURL, "application/json", bytes.NewBuffer(jsonreq))
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(500, "Internal Server Error")
