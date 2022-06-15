@@ -18,7 +18,7 @@ type RequestPayloadMeraki struct {
 }
 
 type AlertData struct {
-	AlertConfigId   string         `json:"alertConfigId"`
+	AlertConfigId   int            `json:"alertConfigId"`
 	TriggerDatas    *[]TriggerData `json:"triggerData"`
 	StartedAlerting bool           `json:"startedAlerting"`
 }
