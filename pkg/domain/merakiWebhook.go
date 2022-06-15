@@ -28,5 +28,8 @@ type TriggerData struct {
 }
 
 type Trigger struct {
-	Ts int `json:"ts"`
+	Ts          int    `json:"ts"`
+	Type        string `json:"type"`
+	NodeId      int    `json:"nodeId"`
+	SensorValue int    `json:"sensorValue"`
 }
